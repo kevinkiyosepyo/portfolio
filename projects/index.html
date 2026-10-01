@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Projects — Kevin Kiyose Pyo, UC San Diego Data Science.">
+  <title>Projects — Kevin Kiyose Pyo</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="wordmark" href="../index.html" aria-label="Kevin Pyo, home">KP<span aria-hidden="true">.</span></a>
+    <nav aria-label="Main navigation">
+      <a href="../index.html">Home</a>
+      <a href="../projects/index.html" aria-current="page">Projects</a>
+      <a href="../resume/index.html">Résumé</a>
+      <a href="../contact/index.html">Contact</a>
+      <a href="https://github.com/kevinkiyosepyo" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+    </nav>
+  </header>
+  <main id="main">
+    <header class="page-heading">
+      <p class="eyebrow">Kevin Kiyose Pyo / Projects</p>
+      <h1>Projects</h1>
+      <p class="lead">Real-time data, backend systems, and tools that do the repetitive work.</p>
+    </header>
+    <article class="project-entry" id="lightning" aria-labelledby="lightning-title">
+      <div><p class="eyebrow">01 / Data engineering</p><p class="meta"><time datetime="2025-11">Nov 2025</time> – <time datetime="2026-02">Feb 2026</time></p></div>
+      <div>
+        <h2 id="lightning-title">Lightning Data Pipeline</h2>
+        <p>A real-time pipeline that turns Blitzortung's compressed WebSocket feed into structured lightning-strike data, stored in PostgreSQL and served through a FastAPI REST API.</p>
+        <ul>
+          <li>Reverse-engineered the feed's compression format and implemented a decoder for the incoming data.</li>
+          <li>Connected ingestion, storage, and an API, with automatic reconnection and validation.</li>
+          <li>Containerized the services with Docker Compose, health checks, and persistent storage.</li>
+        </ul>
+        <p class="meta">Python · PostgreSQL · FastAPI · Docker</p>
+        <div class="text-links"><a href="https://github.com/kevinkiyosepyo/Lightning-Data-Pipeline-API">View source code <span aria-hidden="true">↗</span></a></div>
+      </div>
+    </article>
+    <article class="project-entry" id="job-agent" aria-labelledby="job-title">
+      <div><p class="eyebrow">02 / Automation</p><p class="meta"><time datetime="2026-07">Jul 2026</time> – Present</p></div>
+      <div>
+        <h2 id="job-title">Job Application Automation</h2>
+        <p>An agent-driven browser workflow that completes applications end to end, from account creation and form filling through submission and confirmation.</p>
+        <ul>
+          <li>Built dedicated handlers for Greenhouse, Workday, Oracle, and Ashby rather than treating every form the same.</li>
+          <li>Used Python and Chrome DevTools to work with real browser forms and their changing state.</li>
+          <li>Tracked submission evidence so a filled form is not mistaken for a completed application.</li>
+        </ul>
+        <p class="meta">Python · Chrome DevTools · AI agents</p>
+        <div class="text-links"><a href="https://github.com/kevinkiyosepyo/job-agent">View source code <span aria-hidden="true">↗</span></a></div>
+      </div>
+    </article>
+    <article class="project-entry" id="ridewatch" aria-labelledby="ridewatch-title">
+      <div><p class="eyebrow">03 / Transit data</p><p class="meta">Personal project</p></div>
+      <div>
+        <h2 id="ridewatch-title">RideWatch</h2>
+        <p>A public-transit reliability tracker that compares GTFS-Realtime feeds against published schedules. It combines a live vehicle map with stop-level reliability history and delay notifications.</p>
+        <ul>
+          <li>Reconciles repeated and out-of-order feed updates into a consistent record.</li>
+          <li>Archives raw data for replay and versions schedules to preserve historical meaning.</li>
+          <li>Uses precomputed reliability summaries rather than aggregating every request.</li>
+        </ul>
+        <p class="meta">Go · PostgreSQL · GTFS-Realtime · MapLibre</p>
+        <div class="text-links"><a href="https://github.com/kevinkiyosepyo/ridewatch">View source code <span aria-hidden="true">↗</span></a></div>
+      </div>
+    </article>
+  </main>
+  <footer class="site-footer"><span>Kevin Kiyose Pyo</span><span>HTML &amp; CSS · DSC 106</span></footer>
+</body>
+</html>
