@@ -1,6 +1,7 @@
 """Lab acceptance tests. Run: python3 -m unittest discover -s tests -v."""
 from html.parser import HTMLParser
 from pathlib import Path
+import re
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -82,6 +83,58 @@ class LabAcceptanceTests(unittest.TestCase):
         self.assertTrue(all(t.get("datetime") for t in doc.elements("time")))
         self.assertIn({"datetime": "2028-05"}, doc.elements("time"))
         self.assertTrue(all(s.get("aria-labelledby") for s in doc.elements("section")))
+
+
+class Lab2StylingTests(unittest.TestCase):
+    """Checks the CSS and markup each Lab 2 step asks for."""
+
+    css = re.sub(r"\s+", " ", (ROOT / "style.css").read_text())
+
+    def assertCss(self, *snippets):
+        for snippet in snippets:
+            self.assertIn(snippet, self.css)
+
+    def test_step1_body_width(self):
+        self.assertCss("max-width: 100ch;", "margin-inline: auto;", "padding-inline:")
+
+    def test_step2_navigation(self):
+        self.assertCss(
+            "nav ul, nav li { display: contents; }", "nav { display: flex;",
+            "flex: 1;", "text-decoration: none;", "color: inherit;", "text-align: center;",
+            "padding: 0.5em;", "border-bottom: 1px solid var(--color-border);",
+            "--color-border: oklch(80% 3% 200);", "nav a.current { border-bottom: 0.4em solid",
+            "--color-accent:", "accent-color: var(--color-accent);",
+            "nav a:hover { border-bottom: 0.4em solid var(--color-accent);",
+            "oklch(from var(--color-accent) 95% 5% h)",
+        )
+        for route in ["index.html", "projects/index.html", "contact/index.html", "resume/index.html"]:
+            doc = Document(ROOT / route)
+            current = [a for a in doc.elements("a") if "current" in a.get("class", "").split()]
+            self.assertEqual(len(current), 1, route)
+            self.assertEqual(current[0].get("aria-current"), "page", route)
+
+    def test_step3_contact_form_grid(self):
+        self.assertCss(
+            "font: inherit;", "form { display: grid; grid-template-columns: auto 1fr; gap: 1em; }",
+            "grid-template-columns: subgrid;", "grid-column: 1 / -1;",
+        )
+
+    def test_step4_projects_grid(self):
+        doc = Document(ROOT / "projects/index.html")
+        self.assertIn({"class": "projects"}, doc.elements("div"))
+        self.assertEqual(len(doc.elements("article")), 12)
+        self.assertEqual(len(doc.elements("h2")), 12)
+        images = doc.elements("img")
+        self.assertEqual(len(images), 12)
+        self.assertTrue(all("alt" in img for img in images))
+        self.assertCss(
+            "grid-template-columns: repeat(auto-fill, minmax(15em, 1fr));",
+            "grid-template-rows: subgrid;", "grid-row: span 3;", "font-size: 400%;",
+            "h1, h2, h3, h4, h5, h6 { line-height: 1.1; text-wrap: balance;",
+        )
+
+    def test_step5_resume_is_styled(self):
+        self.assertCss(".resume-entry {", "&::before", ".skills {")
 
 
 if __name__ == "__main__":

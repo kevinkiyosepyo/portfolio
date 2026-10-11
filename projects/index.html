@@ -14,7 +14,7 @@
     <a class="wordmark" href="../index.html" aria-label="Kevin Pyo, home">KP<span aria-hidden="true">.</span></a>
     <nav aria-label="Main navigation">
       <a href="../index.html">Home</a>
-      <a href="../projects/index.html" aria-current="page">Projects</a>
+      <a href="../projects/index.html" class="current" aria-current="page">Projects</a>
       <a href="../resume/index.html">Résumé</a>
       <a href="../contact/index.html">Contact</a>
       <a href="https://github.com/kevinkiyosepyo" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
@@ -26,48 +26,68 @@
       <h1>Projects</h1>
       <p class="lead">Real-time data, backend systems, and tools that do the repetitive work.</p>
     </header>
-    <article class="project-entry" id="lightning" aria-labelledby="lightning-title">
-      <div><p class="eyebrow">01 / Data engineering</p><p class="meta"><time datetime="2025-11">Nov 2025</time> – <time datetime="2026-02">Feb 2026</time></p></div>
-      <div>
-        <h2 id="lightning-title">Lightning Data Pipeline</h2>
-        <p>A real-time pipeline that turns Blitzortung's compressed WebSocket feed into structured lightning-strike data, stored in PostgreSQL and served through a FastAPI REST API.</p>
-        <ul>
-          <li>Reverse-engineered the feed's compression format and implemented a decoder for the incoming data.</li>
-          <li>Connected ingestion, storage, and an API, with automatic reconnection and validation.</li>
-          <li>Containerized the services with Docker Compose, health checks, and persistent storage.</li>
-        </ul>
-        <p class="meta">Python · PostgreSQL · FastAPI · Docker</p>
-        <div class="text-links"><a href="https://github.com/kevinkiyosepyo/Lightning-Data-Pipeline-API">View source code <span aria-hidden="true">↗</span></a></div>
-      </div>
-    </article>
-    <article class="project-entry" id="job-agent" aria-labelledby="job-title">
-      <div><p class="eyebrow">02 / Automation</p><p class="meta"><time datetime="2026-07">Jul 2026</time> – Present</p></div>
-      <div>
-        <h2 id="job-title">Job Application Automation</h2>
-        <p>An agent-driven browser workflow that completes applications end to end, from account creation and form filling through submission and confirmation.</p>
-        <ul>
-          <li>Built dedicated handlers for Greenhouse, Workday, Oracle, and Ashby rather than treating every form the same.</li>
-          <li>Used Python and Chrome DevTools to work with real browser forms and their changing state.</li>
-          <li>Tracked submission evidence so a filled form is not mistaken for a completed application.</li>
-        </ul>
-        <p class="meta">Python · Chrome DevTools · AI agents</p>
-        <div class="text-links"><a href="https://github.com/kevinkiyosepyo/job-agent">View source code <span aria-hidden="true">↗</span></a></div>
-      </div>
-    </article>
-    <article class="project-entry" id="ridewatch" aria-labelledby="ridewatch-title">
-      <div><p class="eyebrow">03 / Transit data</p><p class="meta">Personal project</p></div>
-      <div>
-        <h2 id="ridewatch-title">RideWatch</h2>
-        <p>A public-transit reliability tracker that compares GTFS-Realtime feeds against published schedules. It combines a live vehicle map with stop-level reliability history and delay notifications.</p>
-        <ul>
-          <li>Reconciles repeated and out-of-order feed updates into a consistent record.</li>
-          <li>Archives raw data for replay and versions schedules to preserve historical meaning.</li>
-          <li>Uses precomputed reliability summaries rather than aggregating every request.</li>
-        </ul>
-        <p class="meta">Go · PostgreSQL · GTFS-Realtime · MapLibre</p>
-        <div class="text-links"><a href="https://github.com/kevinkiyosepyo/ridewatch">View source code <span aria-hidden="true">↗</span></a></div>
-      </div>
-    </article>
+    <div class="projects">
+      <article id="lightning">
+        <h2>Lightning Data Pipeline</h2>
+        <img src="https://vis-society.github.io/labs/2/images/empty.svg" alt="">
+        <p>A real-time pipeline that decodes Blitzortung's compressed WebSocket feed into structured lightning-strike data, stored in PostgreSQL and served through a FastAPI REST API. Python, PostgreSQL, FastAPI, Docker. <a href="https://github.com/kevinkiyosepyo/Lightning-Data-Pipeline-API">Source code <span aria-hidden="true">↗</span></a></p>
+      </article>
+      <article id="job-agent">
+        <h2>Job Application Automation</h2>
+        <img src="https://vis-society.github.io/labs/2/images/empty.svg" alt="">
+        <p>An agent-driven browser workflow that completes applications end to end, with dedicated handlers for Greenhouse, Workday, Oracle, and Ashby. Python, Chrome DevTools, AI agents. <a href="https://github.com/kevinkiyosepyo/job-agent">Source code <span aria-hidden="true">↗</span></a></p>
+      </article>
+      <article id="ridewatch">
+        <h2>RideWatch</h2>
+        <img src="https://vis-society.github.io/labs/2/images/empty.svg" alt="">
+        <p>A transit reliability tracker that compares GTFS-Realtime feeds against published schedules, with a live vehicle map and stop-level delay history. Go, PostgreSQL, MapLibre. <a href="https://github.com/kevinkiyosepyo/ridewatch">Source code <span aria-hidden="true">↗</span></a></p>
+      </article>
+      <article>
+        <h2>Architecto ipsum harum inventore</h2>
+        <img src="https://vis-society.github.io/labs/2/images/empty.svg" alt="">
+        <p>Sit dignissimos amet officia minima fugiat asperiores nihil sapiente eveniet. Numquam maxime architecto quibusdam repellendus magnam fugiat minima temporibus amet sapiente harum. Repellendus quibusdam asperiores consectetur dolor eligendi doloribus adipisicing provident.</p>
+      </article>
+      <article>
+        <h2>Fugiat nihil harum quos</h2>
+        <img src="https://vis-society.github.io/labs/2/images/empty.svg" alt="">
+        <p>Dignissimos minima nihil asperiores impedit voluptate blanditiis magnam aliquam expedita laboriosam. Doloribus quaerat harum aliquam quibusdam provident maxime laboriosam. Eligendi temporibus harum nihil cupiditate perferendis aliquam molestias impedit inventore fugiat.</p>
+      </article>
+      <article>
+        <h2>Perferendis magnam quibusdam nemo</h2>
+        <img src="https://vis-society.github.io/labs/2/images/empty.svg" alt="">
+        <p>Dolor temporibus cupiditate inventore amet adipisicing corporis architecto minima eligendi eveniet. Lorem aliquam adipisicing molestias elit fugiat eveniet sapiente magnam quibusdam ipsum. Cupiditate quos maxime adipisicing accusantium numquam lorem.</p>
+      </article>
+      <article>
+        <h2>Asperiores ratione cupiditate officia</h2>
+        <img src="https://vis-society.github.io/labs/2/images/empty.svg" alt="">
+        <p>Quos maxime dolor sapiente lorem minima aliquam. Magnam nemo dolor blanditiis doloribus lorem inventore provident expedita. Doloribus elit dolor maxime cupiditate corporis magnam officia harum.</p>
+      </article>
+      <article>
+        <h2>Fugiat laboriosam inventore molestias</h2>
+        <img src="https://vis-society.github.io/labs/2/images/empty.svg" alt="">
+        <p>Temporibus doloribus officia numquam impedit blanditiis magnam. Temporibus perferendis laboriosam lorem molestias accusantium tempora sit ratione sapiente voluptate. Architecto molestias dignissimos elit maxime officia accusantium corporis inventore dolor quos.</p>
+      </article>
+      <article>
+        <h2>Nemo fugiat voluptate consectetur</h2>
+        <img src="https://vis-society.github.io/labs/2/images/empty.svg" alt="">
+        <p>Eligendi numquam nihil corporis quaerat officia voluptate provident elit ipsum consectetur. Blanditiis cupiditate provident nihil numquam consectetur corporis temporibus tempora aliquam magnam. Eveniet ipsum corporis dignissimos laboriosam expedita molestias.</p>
+      </article>
+      <article>
+        <h2>Lorem sit accusantium maxime</h2>
+        <img src="https://vis-society.github.io/labs/2/images/empty.svg" alt="">
+        <p>Minima dolor sit amet consectetur tempora maxime cupiditate temporibus numquam nemo quaerat. Laboriosam sapiente eveniet ratione officia eligendi quaerat lorem quibusdam repellendus temporibus. Cupiditate corporis sit dolor eveniet elit expedita accusantium maxime quos.</p>
+      </article>
+      <article>
+        <h2>Tempora laboriosam ipsum sit</h2>
+        <img src="https://vis-society.github.io/labs/2/images/empty.svg" alt="">
+        <p>Adipisicing minima blanditiis ipsum accusantium temporibus perferendis. Adipisicing laboriosam consectetur blanditiis minima asperiores nihil nemo numquam voluptate repellendus. Ratione minima temporibus harum corporis provident magnam dolor elit adipisicing.</p>
+      </article>
+      <article>
+        <h2>Magnam impedit inventore minima</h2>
+        <img src="https://vis-society.github.io/labs/2/images/empty.svg" alt="">
+        <p>Asperiores eveniet quos voluptate blanditiis dolor consectetur ratione. Laboriosam molestias temporibus numquam officia adipisicing corporis inventore provident impedit tempora. Magnam numquam voluptate consectetur nihil quibusdam impedit.</p>
+      </article>
+    </div>
   </main>
   <footer class="site-footer"><span>Kevin Kiyose Pyo</span><span>HTML &amp; CSS · DSC 106</span></footer>
 </body>

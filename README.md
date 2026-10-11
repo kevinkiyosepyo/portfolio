@@ -1,6 +1,6 @@
 # Kevin Kiyose Pyo — Portfolio
 
-A personal site for [DSC 106 Lab 1](https://dsc106.com/labs/lab01/), built with semantic HTML and a shared CSS stylesheet. No framework, build step, external fonts, or tracking scripts.
+A personal site for DSC 106 [Lab 1](https://dsc106.com/labs/lab01/) and [Lab 2](https://dsc106.com/labs/lab02/), built with semantic HTML and a shared CSS stylesheet. No framework, build step, external fonts, or tracking scripts.
 
 - **Website:** https://kevinkiyosepyo.github.io/portfolio/
 - **Repository:** https://github.com/kevinkiyosepyo/portfolio
@@ -8,12 +8,22 @@ A personal site for [DSC 106 Lab 1](https://dsc106.com/labs/lab01/), built with 
 ## Pages
 
 - `index.html`: personal introduction, local portrait with alt text, selected projects.
-- `projects/index.html`: Lightning Data Pipeline, Job Application Automation, RideWatch.
+- `projects/index.html`: responsive card grid with Lightning Data Pipeline, Job Application Automation, RideWatch, and placeholder cards.
 - `contact/index.html`: labeled native `mailto:` form with `method="POST"` and `enctype="text/plain"`.
 - `resume/index.html`: education, experience, projects, and skills using sections, articles, lists, and machine-readable dates.
 - `style.css`: shared system-UI body font, responsive layout, focus styles, and print rules.
 
 Every page has relative navigation links to all four pages and a GitHub profile link that opens a new tab. The layout changes to one column on narrow screens. The repository-root `main` branch is the GitHub Pages source.
+
+## Lab 2: Styling with CSS
+
+[Lab 2](https://dsc106.com/labs/lab02/) changes, labeled by step in `style.css`:
+
+1. **Width:** `body` has `max-width: 100ch`, `margin-inline: auto`, and side padding.
+2. **Navigation:** Flexbox nav with equal-width (`flex: 1`) links, a cool-gray bottom border, a thick border on the `.current` page link, and an `--color-accent` hover with a tinted `oklch(from ...)` background. Links wrap on phones instead of overflowing.
+3. **Contact form:** `font: inherit` on controls; the form is a two-column grid (`auto 1fr`) and each label uses `subgrid` to span both columns.
+4. **Projects:** 12 cards (3 real projects, 9 placeholders) in a `repeat(auto-fill, minmax(15em, 1fr))` grid, with `subgrid` rows so headings, images, and text align. `h1` is `400%`; all headings get `line-height: 1.1` and `text-wrap: balance`.
+5. **Résumé:** a timeline with accent dots on hover, date pills, accent list markers, and skills as a grid-based definition list with chips, written with CSS nesting.
 
 ## Run locally
 

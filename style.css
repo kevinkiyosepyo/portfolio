@@ -1,41 +1,109 @@
-/* Shared presentation; the HTML remains the source of content and structure. */
+/* Shared presentation; the HTML remains the source of content and structure.
+   Lab 2 steps are labeled so each rule can be traced back to the lab. */
+
+/* ---------- Tokens ---------- */
 :root {
   color-scheme: light;
   --paper: #f8f7f3;
   --ink: #202924;
   --muted: #58625a;
-  --accent: #295c42;
   --line: #cbd0c8;
+  /* Step 2.3: the cool gray used for the nav borders */
+  --color-border: oklch(80% 3% 200);
+  /* Step 2.4: one accent color, defined once on the root and reused everywhere */
+  --color-accent: oklch(45% 18% 159);
+  --color-accent-soft: oklch(from var(--color-accent) 95% 5% h);
+  accent-color: var(--color-accent);
 }
+
 * { box-sizing: border-box; }
+
+/* ---------- Step 1: keep content from getting too wide ---------- */
 body {
   font: 100%/1.5 system-ui;
   color: var(--ink);
   background: var(--paper);
-  max-width: 72rem;
-  margin: 0 auto;
-  padding: 0 clamp(1.25rem, 5vw, 4rem);
+  max-width: 100ch;       /* scales with font size, still shrinks on small screens */
+  margin-inline: auto;    /* centers the column */
+  padding-inline: 1.5em;  /* keeps text off the viewport edges when narrow */
 }
-a { color: var(--accent); text-underline-offset: .22em; }
+
+a { color: var(--color-accent); text-underline-offset: .22em; }
 a:hover { text-decoration-thickness: 2px; }
 a:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-visible {
-  outline: 3px solid var(--accent);
+  outline: 3px solid var(--color-accent);
   outline-offset: 4px;
 }
-h1, h2, h3, p, figure { margin: 0; }
-h1, h2, h3 { line-height: 1.15; text-wrap: balance; }
-h1 { font: 500 clamp(2.7rem, 6vw, 4.6rem)/1.05 Georgia, serif; letter-spacing: -.045em; max-width: 12ch; }
-h2 { font: 500 2rem/1.2 Georgia, serif; }
+
+/* ---------- Step 4.4: heading defaults and hierarchy ---------- */
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.1;
+  text-wrap: balance;
+  margin: 0;
+}
+h1 {
+  font-family: Georgia, serif;
+  font-weight: 500;
+  font-size: 400%;        /* clear contrast with h2 */
+  letter-spacing: -.045em;
+  max-width: 12ch;
+}
+h2 { font: 500 2rem/1.1 Georgia, serif; }
 h3 { font-size: 1.2rem; font-weight: 600; }
+p, figure { margin: 0; }
 p + p { margin-top: 1rem; }
 p { text-wrap: pretty; }
-.site-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.5rem 0; border-bottom: 1px solid var(--line); }
-.wordmark { color: var(--ink); font-size: 1.7rem; font-weight: 750; letter-spacing: -.08em; text-decoration: none; }
-.wordmark span { color: var(--accent); }
-nav { display: flex; flex-wrap: wrap; column-gap: 1.4rem; row-gap: .25rem; }
-nav a { display: inline-flex; align-items: center; gap: .3rem; min-height: 44px; color: var(--muted); font-size: .94rem; text-decoration: none; }
-nav a:hover, nav a[aria-current="page"] { color: var(--ink); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: .5em; }
-.intro { display: grid; grid-template-columns: minmax(0, 1fr) 13.5rem; align-items: center; gap: 4rem; padding: 4rem 0; }
+
+/* ---------- Step 2: navigation bar ---------- */
+.site-header { padding-top: 1.25rem; }
+.wordmark {
+  display: inline-block;
+  margin-bottom: .5rem;
+  color: var(--ink);
+  font-size: 1.7rem;
+  font-weight: 750;
+  letter-spacing: -.08em;
+  text-decoration: none;
+  span { color: var(--color-accent); }
+}
+
+/* Step 2.1: if a <ul> is used, its boxes get out of the way */
+nav ul, nav li { display: contents; }
+
+/* Step 2.2: Flexbox lays the links out in a row */
+nav {
+  display: flex;
+  flex-wrap: wrap;  /* lets the links wrap instead of overflowing on phones */
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Step 2.3: each link takes an equal share and loses the default link look */
+nav a {
+  flex: 1;
+  text-decoration: none;
+  color: inherit;
+  text-align: center;
+  padding: 0.5em;
+  white-space: nowrap;
+}
+
+/* Current page: thick border, reduced padding so the height stays the same */
+nav a.current {
+  border-bottom: 0.4em solid var(--color-border);
+  padding-bottom: 0.1em;
+  font-weight: 600;
+}
+
+/* Step 2.4: hover uses the accent color plus a light tint of the same hue */
+nav a:hover {
+  border-bottom: 0.4em solid var(--color-accent);
+  padding-bottom: 0.1em;
+  background-color: var(--color-accent-soft);
+}
+
+/* ---------- Home page ---------- */
+.intro { display: grid; grid-template-columns: minmax(0, 1fr) 13.5rem; align-items: center; gap: 4rem; padding: 1.5rem 0 4rem; }
 .eyebrow, .section-label { font: 600 .78rem/1.5 system-ui; text-transform: uppercase; letter-spacing: .11em; color: var(--muted); }
 .eyebrow { margin-bottom: 1.25rem; }
 .lead { font-size: 1.3rem; line-height: 1.45; max-width: 37ch; margin-top: 1.6rem; }
@@ -52,39 +120,187 @@ figcaption { color: var(--muted); font-size: .75rem; margin-top: .8rem; }
 .project-list h3 a { text-decoration: none; }
 .project-list h3 a:hover { text-decoration: underline; }
 .meta { color: var(--muted); font-size: .87rem; }
-.page-heading { padding: 3.5rem 0 2.8rem; }
+.page-heading { padding: 1rem 0 2.8rem; }
 .page-heading h1 { max-width: none; }
 .page-heading .lead { max-width: 55ch; }
-.project-entry { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: 2.5rem; border-top: 1px solid var(--line); padding: 2.5rem 0; }
-.project-entry h2 { margin-bottom: 1rem; }
-.project-entry ul, .resume-entry ul { padding-left: 1.2rem; margin-bottom: 0; }
-li + li { margin-top: .6rem; }
-.resume-entry + .resume-entry { margin-top: 2rem; }
-.resume-entry header { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
-.resume-entry .organization { color: var(--accent); margin-top: .35rem; }
-.resume-entry .dates { color: var(--muted); font-size: .85rem; white-space: nowrap; }
-.skills-list { padding-left: 1.2rem; margin: 0; }
+
+/* ---------- Step 4: projects page ---------- */
+/* Step 4.2: as many 15em+ columns as fit, so the grid adapts to the window */
+.projects {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15em, 1fr));
+  gap: 1em;
+  padding-bottom: 3rem;
+
+  /* Step 4.3: each card borrows the parent's rows, so headings,
+     images, and text line up across a row even when headings wrap */
+  article {
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: span 3;
+    padding-top: 1em;
+    border-top: 1px solid var(--line);
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.4rem;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  p { font-size: .95rem; }
+}
+
+/* ---------- Step 3: contact form ---------- */
 .contact-layout { display: grid; grid-template-columns: 1fr 1.4fr; gap: 4rem; border-top: 1px solid var(--line); padding: 2.5rem 0 3.5rem; }
 .contact-layout h2 { margin-bottom: 1rem; }
-form label { display: block; font-weight: 600; margin-bottom: 1.25rem; }
-input, textarea { display: block; width: 100%; max-width: 100%; margin-top: .5rem; border: 1px solid #7a857c; border-radius: 3px; background: #fffefa; color: var(--ink); font: inherit; padding: .7rem .85rem; }
+
+/* Step 3.1: form controls use the page font instead of the browser default */
+input, textarea, button, select {
+  font: inherit;
+}
+
+/* Step 3.3: labels on the left, fields on the right, all aligned */
+form {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1em;
+}
+
+form label {
+  display: grid;
+  grid-template-columns: subgrid;  /* label text and field use the form's columns */
+  grid-column: 1 / -1;             /* each label spans the whole row */
+  align-items: baseline;
+  font-weight: 600;
+}
+
+form button {
+  grid-column: 1 / -1;
+}
+
+input, textarea {
+  font-weight: 400;
+  border: 1px solid #7a857c;
+  border-radius: 3px;
+  background: #fffefa;
+  color: var(--ink);
+  padding: .7rem .85rem;
+  min-width: 0;
+}
 textarea { min-height: 9rem; resize: vertical; }
-button { min-height: 44px; border: 1px solid var(--accent); border-radius: 3px; background: var(--accent); color: white; font: 600 1rem/1.5 system-ui; padding: .7rem 1.3rem; cursor: pointer; }
-button:hover { background: #1e4632; }
+button {
+  min-height: 44px;
+  border: 1px solid var(--color-accent);
+  border-radius: 3px;
+  background: var(--color-accent);
+  color: white;
+  font-weight: 600;
+  padding: .7rem 1.3rem;
+  cursor: pointer;
+}
+button:hover { background: oklch(from var(--color-accent) calc(l - 8%) c h); }
 .form-note { color: var(--muted); font-size: .87rem; margin-top: 1rem; }
+
+/* ---------- Step 5: résumé / CV ---------- */
+.resume-entry {
+  position: relative;
+  padding-inline-start: 1.5rem;
+  border-inline-start: 2px solid var(--line);
+  transition: border-color .2s;
+
+  /* timeline dot */
+  &::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: -.45rem;
+    top: .3rem;
+    width: .8rem;
+    height: .8rem;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 2px solid var(--line);
+    transition: background .2s, border-color .2s;
+  }
+
+  &:hover {
+    border-inline-start-color: var(--color-accent);
+    &::before { background: var(--color-accent); border-color: var(--color-accent); }
+  }
+
+  & + & { margin-top: 2rem; }
+
+  header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .organization { color: var(--color-accent); margin-top: .35rem; font-weight: 500; }
+
+  .dates {
+    color: var(--color-accent);
+    background: var(--color-accent-soft);
+    border-radius: 999px;
+    padding: .1rem .65rem;
+    font-size: .8rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  ul { padding-left: 1.2rem; margin: .75rem 0 0; }
+  li::marker { color: var(--color-accent); }
+}
+li + li { margin-top: .6rem; }
+
+/* Skills: a definition list laid out with grid, each skill as a chip */
+.skills {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem 1.5rem;
+  margin: 0;
+
+  div { display: grid; grid-template-columns: subgrid; grid-column: 1 / -1; align-items: baseline; }
+  dt { font-weight: 600; }
+  dd { margin: 0; }
+  ul { display: flex; flex-wrap: wrap; gap: .4rem; list-style: none; padding: 0; margin: 0; }
+  li {
+    margin: 0;
+    padding: .15rem .6rem;
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    background: #fffefa;
+    font-size: .88rem;
+  }
+  li:hover { border-color: var(--color-accent); background: var(--color-accent-soft); }
+}
+
+/* ---------- Footer and utilities ---------- */
 .site-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .6rem 2rem; padding: 1.5rem 0 2rem; border-top: 1px solid var(--line); font-size: .8rem; color: var(--muted); }
 .visually-hidden, .skip-link:not(:focus) { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
 .skip-link:focus { display: inline-block; margin-top: .5rem; padding: .5rem; }
+
+/* ---------- Narrow screens ---------- */
 @media (max-width: 720px) {
-  .site-header { align-items: flex-start; flex-direction: column; gap: .4rem; padding: 1rem 0; }
-  nav { column-gap: 1.2rem; }
-  .intro { grid-template-columns: 1fr; gap: 2rem; padding: 2.6rem 0; }
+  .intro { grid-template-columns: 1fr; gap: 2rem; padding: 1rem 0 2.6rem; }
   .portrait { max-width: 12rem; }
-  .section-row, .project-entry { grid-template-columns: 1fr; gap: 1.2rem; padding: 2rem 0; }
-  .page-heading { padding: 2.6rem 0 2rem; }
-  .resume-entry header { flex-direction: column; gap: .45rem; }
+  .section-row { grid-template-columns: 1fr; gap: 1.2rem; padding: 2rem 0; }
   .contact-layout { grid-template-columns: 1fr; gap: 2rem; }
+  .resume-entry header { flex-direction: column; gap: .45rem; }
+  .skills { grid-template-columns: 1fr; div { grid-column: 1; grid-template-columns: 1fr; gap: .4rem; } }
 }
+@media (max-width: 30em) {
+  body { padding-inline: 1em; }
+  h1 { font-size: 300%; }
+  nav { font-size: .9rem; }
+}
+
 @media print {
   body { background: white; color: black; padding: 0; max-width: none; font-size: 12pt; }
   .site-header, .site-footer, .skip-link { display: none; }
