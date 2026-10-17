@@ -38,39 +38,29 @@ class LabAcceptanceTests(unittest.TestCase):
         self.assertTrue(any(l.get("href") == "style.css" for l in doc.elements("link")))
         self.assertTrue((ROOT / "style.css").is_file())
 
-    def test_every_page_has_complete_relative_navigation(self):
+    def test_every_page_loads_global_js_instead_of_a_hardcoded_nav(self):
         routes = ["index.html", "projects/index.html", "contact/index.html", "resume/index.html"]
         for route in routes:
             with self.subTest(route=route):
                 path = ROOT / route
                 doc = Document(path)
-                self.assertTrue(doc.elements("nav"), f"Missing navigation on {route}")
+                self.assertFalse(doc.elements("nav"), f"{route} still has a hand-written nav")
+                self.assertIn({"class": "site-header"}, doc.elements("header"))
                 self.assertEqual(len(doc.elements("h1")), 1)
                 self.assertTrue(doc.elements("title"))
                 self.assertTrue(any(m.get("name") == "viewport" for m in doc.elements("meta")))
-                links = doc.elements("a")
-                for destination in routes:
-                    self.assertTrue(any(
-                        not a.get("href", "").startswith(("/", "http", "mailto:", "#"))
-                        and (path.parent / a.get("href", "")).resolve() == ROOT / destination
-                        for a in links
-                    ), f"{route} does not link relatively to {destination}")
-                self.assertTrue(any(a.get("aria-current") == "page" for a in links))
-                github = [a for a in links if a.get("href") == "https://github.com/kevinkiyosepyo" and a.get("target") == "_blank"]
-                self.assertTrue(github)
-                self.assertIn("noopener", github[0].get("rel", ""))
+                scripts = [s for s in doc.elements("script") if s.get("type") == "module"]
+                self.assertEqual(len(scripts), 1, route)
+                self.assertEqual((path.parent / scripts[0]["src"]).resolve(), ROOT / "global.js")
                 stylesheet = next(l for l in doc.elements("link") if l.get("rel") == "stylesheet")
                 self.assertEqual((path.parent / stylesheet["href"]).resolve(), ROOT / "style.css")
 
-    def test_contact_form_uses_required_mailto_contract(self):
+    def test_contact_form_uses_get_mailto_contract(self):
         doc = Document(ROOT / "contact/index.html")
-        self.assertEqual(doc.elements("form"), [{
-            "action": "mailto:kevinkpyo@gmail.com", "method": "POST", "enctype": "text/plain"
-        }])
+        self.assertEqual(doc.elements("form"), [{"action": "mailto:kevinkpyo@gmail.com", "method": "GET"}])
         fields = {field.get("name"): field for field in doc.elements("input") + doc.elements("textarea")}
-        self.assertEqual(set(fields), {"email", "subject", "body"})
-        self.assertEqual(fields["email"]["type"], "email")
-        self.assertEqual(len(doc.elements("label")), 3)
+        self.assertEqual(set(fields), {"subject", "body"})
+        self.assertEqual(len(doc.elements("label")), 2)
         self.assertTrue(doc.elements("button"))
         self.assertFalse(doc.elements("table"))
 
@@ -102,16 +92,11 @@ class Lab2StylingTests(unittest.TestCase):
             "nav ul, nav li { display: contents; }", "nav { display: flex;",
             "flex: 1;", "text-decoration: none;", "color: inherit;", "text-align: center;",
             "padding: 0.5em;", "border-bottom: 1px solid var(--color-border);",
-            "--color-border: oklch(80% 3% 200);", "nav a.current { border-bottom: 0.4em solid",
+            "nav a.current { border-bottom: 0.4em solid",
             "--color-accent:", "accent-color: var(--color-accent);",
             "nav a:hover { border-bottom: 0.4em solid var(--color-accent);",
-            "oklch(from var(--color-accent) 95% 5% h)",
+            "background-color: var(--color-accent-soft);",
         )
-        for route in ["index.html", "projects/index.html", "contact/index.html", "resume/index.html"]:
-            doc = Document(ROOT / route)
-            current = [a for a in doc.elements("a") if "current" in a.get("class", "").split()]
-            self.assertEqual(len(current), 1, route)
-            self.assertEqual(current[0].get("aria-current"), "page", route)
 
     def test_step3_contact_form_grid(self):
         self.assertCss(
@@ -135,6 +120,48 @@ class Lab2StylingTests(unittest.TestCase):
 
     def test_step5_resume_is_styled(self):
         self.assertCss(".resume-entry {", "&::before", ".skills {")
+
+
+class Lab3JavaScriptTests(unittest.TestCase):
+    """Checks the code each Lab 3 step asks for. tests/browser_check.py runs it."""
+
+    js = re.sub(r"\s+", " ", (ROOT / "global.js").read_text())
+    css = Lab2StylingTests.css
+
+    def assertJs(self, *snippets):
+        for snippet in snippets:
+            self.assertIn(snippet, self.js)
+
+    def test_step1_global_js(self):
+        self.assertJs("console.log('IT’S ALIVE!');", "function $$(selector, context = document)")
+
+    def test_step3_nav_built_from_pages(self):
+        self.assertJs(
+            "let pages = [", "{ url: '', title: 'Home' }", "{ url: 'projects/', title: 'Projects' }",
+            "location.hostname === 'localhost'", "'/portfolio/'", "document.createElement('nav')",
+            "for (let p of pages)", "!p.url.startsWith('http') ? BASE_PATH + p.url : p.url",
+            "document.createElement('a')", "a.classList.toggle('current'",
+            "a.host === location.host", "a.target = '_blank';",
+        )
+
+    def test_step4_dark_mode(self):
+        self.assertIn("color-scheme: light dark;", self.css)
+        self.assertIn("--color-border: oklch(50% 10% 200 / 40%);", self.css)
+        self.assertIn("color-mix(in oklch, var(--color-accent), canvas 85%)", self.css)
+        self.assertIn(".color-scheme { position: absolute; top: 1rem; right: 1rem; font-size: 80%; }", self.css)
+        self.assertJs(
+            '<label class="color-scheme">', '<option value="light dark">', '<option value="light">',
+            '<option value="dark">', "matchMedia('(prefers-color-scheme: dark)')",
+            "select.addEventListener('input'", "document.documentElement.style.setProperty('color-scheme'",
+            "'colorScheme' in localStorage", "localStorage.colorScheme = event.target.value",
+            "select.value = colorScheme",
+        )
+
+    def test_step5_contact_form(self):
+        self.assertJs(
+            "form?.addEventListener('submit'", "event.preventDefault()", "new FormData(form)",
+            "for (let [name, value] of data)", "encodeURIComponent(value)", "location.href = url",
+        )
 
 
 if __name__ == "__main__":

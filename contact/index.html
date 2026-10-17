@@ -6,19 +6,13 @@
   <meta name="description" content="Contact Kevin Kiyose Pyo, a UC San Diego data science student.">
   <title>Contact | Kevin Kiyose Pyo</title>
   <link rel="stylesheet" href="../style.css">
+  <script type="module" src="../global.js"></script>
   <link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <a class="wordmark" href="../index.html" aria-label="Kevin Pyo, home">KP<span aria-hidden="true">.</span></a>
-    <nav aria-label="Main navigation">
-      <a href="../index.html">Home</a>
-      <a href="../projects/index.html">Projects</a>
-      <a href="../resume/index.html">Résumé</a>
-      <a href="../contact/index.html" class="current" aria-current="page">Contact</a>
-      <a href="https://github.com/kevinkiyosepyo" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
-    </nav>
   </header>
   <main id="main">
     <header class="page-heading">
@@ -34,11 +28,8 @@
         <div class="text-links"><a href="https://www.linkedin.com/in/kevin-pyo/">LinkedIn <span aria-hidden="true">↗</span></a></div>
       </section>
       <div>
-        <!-- This native mailto form is the intentionally simple Lab 1 implementation. -->
-        <form action="mailto:kevinkpyo@gmail.com" method="POST" enctype="text/plain">
-          <label>Your email
-            <input name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
-          </label>
+        <!-- Lab 3 Step 5: global.js builds the mailto URL so spaces become %20, not +. -->
+        <form action="mailto:kevinkpyo@gmail.com" method="GET">
           <label>Subject
             <input name="subject" placeholder="What's this about?" required>
           </label>
@@ -47,10 +38,10 @@
           </label>
           <button type="submit">Open email draft <span aria-hidden="true">↗</span></button>
         </form>
-        <p class="form-note">This opens a draft in your email app. Nothing sends until you hit send. It only works if you have a mail app or browser mail handler set up, and the formatting depends on which one you use.</p>
+        <p class="form-note">This opens a draft in your email app. Nothing sends until you hit send. You need a mail app or a browser mail handler set up for it to work.</p>
       </div>
     </div>
   </main>
-  <footer class="site-footer"><span>Kevin Kiyose Pyo</span><span>HTML &amp; CSS · DSC 106</span></footer>
+  <footer class="site-footer"><span>Kevin Kiyose Pyo</span><span>HTML, CSS &amp; JS · DSC 106</span></footer>
 </body>
 </html>
