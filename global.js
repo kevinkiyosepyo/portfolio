@@ -101,3 +101,81 @@ form?.addEventListener('submit', function (event) {
   let url = form.action + '?' + params.join('&');
   location.href = url;
 });
+
+// ---------- Lab 4: shared data loading and project templates ----------
+export async function fetchJSON(url) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch ${url}: ${response.status} ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching or parsing JSON data:', error);
+    // Let each page display a useful error instead of treating a failed request as no data.
+    throw error;
+  }
+}
+
+export async function fetchGitHubData(username) {
+  return fetchJSON(`https://api.github.com/users/${encodeURIComponent(username)}`);
+}
+
+// Project paths are relative to the site root, even when rendered on a nested page.
+const siteRoot = new URL('./', import.meta.url);
+const placeholderImage = new URL('images/project-placeholder.svg', siteRoot).href;
+
+function escapeHTML(value) {
+  return String(value ?? '').replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  })[character]);
+}
+
+function projectURL(value, fallback) {
+  try {
+    const url = new URL(value, siteRoot);
+    return ['http:', 'https:'].includes(url.protocol) ? url.href : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+export function renderProjects(projects, containerElement, headingLevel = 'h2') {
+  if (!(containerElement instanceof Element)) {
+    throw new TypeError('renderProjects needs a valid container element.');
+  }
+  if (!Array.isArray(projects)) {
+    throw new TypeError('Project data must be an array.');
+  }
+  const heading = /^h[1-6]$/.test(headingLevel) ? headingLevel : 'h2';
+  containerElement.innerHTML = '';
+
+  if (projects.length === 0) {
+    containerElement.innerHTML = '<p class="data-message">No projects to display yet.</p>';
+    return;
+  }
+
+  for (const project of projects) {
+    const article = document.createElement('article');
+    if (project.id) article.id = project.id;
+    const title = escapeHTML(project.title || 'Untitled project');
+    const image = projectURL(project.image || placeholderImage, placeholderImage);
+    const url = project.url ? projectURL(project.url, '') : '';
+    const year = /^\d{4}$/.test(String(project.year)) ? String(project.year) : '';
+
+    article.innerHTML = `
+      <${heading}>${title}</${heading}>
+      <img src="${escapeHTML(image)}" alt="${escapeHTML(project.imageAlt || project.title || 'Project image')}" width="640" height="360">
+      <div class="project-details">
+        <p class="project-year">${year ? `<time datetime="${year}">${year}</time>` : 'Year not specified'}${project.status ? ` · ${escapeHTML(project.status)}` : ''}</p>
+        <p>${escapeHTML(project.description || 'A description will be added soon.')}</p>
+        ${url ? `<p><a href="${escapeHTML(url)}">View project <span aria-hidden="true">↗</span></a></p>` : ''}
+      </div>
+    `;
+    article.querySelector('img').addEventListener('error', (event) => {
+      event.currentTarget.src = placeholderImage;
+      event.currentTarget.alt = `Image unavailable for ${project.title || 'this project'}`;
+    }, { once: true });
+    containerElement.appendChild(article);
+  }
+}

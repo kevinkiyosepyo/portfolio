@@ -7,6 +7,7 @@
   <title>Projects | Kevin Kiyose Pyo</title>
   <link rel="stylesheet" href="../style.css">
   <script type="module" src="../global.js"></script>
+  <script type="module" src="projects.js"></script>
   <link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
 </head>
 <body>
@@ -17,71 +18,11 @@
   <main id="main">
     <header class="page-heading">
       <p class="eyebrow">Kevin Kiyose Pyo / Projects</p>
-      <h1>Projects</h1>
+      <h1 class="projects-title">Projects</h1>
       <p class="lead">Real time data pipelines, backend systems, and tools that handle repetitive work.</p>
     </header>
-    <div class="projects">
-      <article id="lightning">
-        <h2>Lightning Data Pipeline</h2>
-        <img src="https://vis-society.github.io/labs/2/images/empty.svg" alt="">
-        <p>A real time pipeline that decodes Blitzortung's compressed WebSocket feed, stores the lightning strikes in PostgreSQL, and serves them through a FastAPI REST API. Built with Python, PostgreSQL, FastAPI, and Docker. <a href="https://github.com/kevinkiyosepyo/Lightning-Data-Pipeline-API">Source code <span aria-hidden="true">↗</span></a></p>
-      </article>
-      <article id="job-agent">
-        <h2>Job Application Automation</h2>
-        <img src="https://vis-society.github.io/labs/2/images/empty.svg" alt="">
-        <p>AI agents drive a browser through job applications from start to finish, with a separate handler for Greenhouse, Workday, Oracle, and Ashby. Built with Python and Chrome DevTools. <a href="https://github.com/kevinkiyosepyo/job-agent">Source code <span aria-hidden="true">↗</span></a></p>
-      </article>
-      <article id="ridewatch">
-        <h2>RideWatch</h2>
-        <img src="https://vis-society.github.io/labs/2/images/empty.svg" alt="">
-        <p>Tracks how reliable public transit is by comparing GTFS Realtime feeds against published schedules. It has a live vehicle map and delay history for each stop. Built with Go, PostgreSQL, and MapLibre. <a href="https://github.com/kevinkiyosepyo/ridewatch">Source code <span aria-hidden="true">↗</span></a></p>
-      </article>
-      <article>
-        <h2>Architecto ipsum harum inventore</h2>
-        <img src="https://vis-society.github.io/labs/2/images/empty.svg" alt="">
-        <p>Sit dignissimos amet officia minima fugiat asperiores nihil sapiente eveniet. Numquam maxime architecto quibusdam repellendus magnam fugiat minima temporibus amet sapiente harum. Repellendus quibusdam asperiores consectetur dolor eligendi doloribus adipisicing provident.</p>
-      </article>
-      <article>
-        <h2>Fugiat nihil harum quos</h2>
-        <img src="https://vis-society.github.io/labs/2/images/empty.svg" alt="">
-        <p>Dignissimos minima nihil asperiores impedit voluptate blanditiis magnam aliquam expedita laboriosam. Doloribus quaerat harum aliquam quibusdam provident maxime laboriosam. Eligendi temporibus harum nihil cupiditate perferendis aliquam molestias impedit inventore fugiat.</p>
-      </article>
-      <article>
-        <h2>Perferendis magnam quibusdam nemo</h2>
-        <img src="https://vis-society.github.io/labs/2/images/empty.svg" alt="">
-        <p>Dolor temporibus cupiditate inventore amet adipisicing corporis architecto minima eligendi eveniet. Lorem aliquam adipisicing molestias elit fugiat eveniet sapiente magnam quibusdam ipsum. Cupiditate quos maxime adipisicing accusantium numquam lorem.</p>
-      </article>
-      <article>
-        <h2>Asperiores ratione cupiditate officia</h2>
-        <img src="https://vis-society.github.io/labs/2/images/empty.svg" alt="">
-        <p>Quos maxime dolor sapiente lorem minima aliquam. Magnam nemo dolor blanditiis doloribus lorem inventore provident expedita. Doloribus elit dolor maxime cupiditate corporis magnam officia harum.</p>
-      </article>
-      <article>
-        <h2>Fugiat laboriosam inventore molestias</h2>
-        <img src="https://vis-society.github.io/labs/2/images/empty.svg" alt="">
-        <p>Temporibus doloribus officia numquam impedit blanditiis magnam. Temporibus perferendis laboriosam lorem molestias accusantium tempora sit ratione sapiente voluptate. Architecto molestias dignissimos elit maxime officia accusantium corporis inventore dolor quos.</p>
-      </article>
-      <article>
-        <h2>Nemo fugiat voluptate consectetur</h2>
-        <img src="https://vis-society.github.io/labs/2/images/empty.svg" alt="">
-        <p>Eligendi numquam nihil corporis quaerat officia voluptate provident elit ipsum consectetur. Blanditiis cupiditate provident nihil numquam consectetur corporis temporibus tempora aliquam magnam. Eveniet ipsum corporis dignissimos laboriosam expedita molestias.</p>
-      </article>
-      <article>
-        <h2>Lorem sit accusantium maxime</h2>
-        <img src="https://vis-society.github.io/labs/2/images/empty.svg" alt="">
-        <p>Minima dolor sit amet consectetur tempora maxime cupiditate temporibus numquam nemo quaerat. Laboriosam sapiente eveniet ratione officia eligendi quaerat lorem quibusdam repellendus temporibus. Cupiditate corporis sit dolor eveniet elit expedita accusantium maxime quos.</p>
-      </article>
-      <article>
-        <h2>Tempora laboriosam ipsum sit</h2>
-        <img src="https://vis-society.github.io/labs/2/images/empty.svg" alt="">
-        <p>Adipisicing minima blanditiis ipsum accusantium temporibus perferendis. Adipisicing laboriosam consectetur blanditiis minima asperiores nihil nemo numquam voluptate repellendus. Ratione minima temporibus harum corporis provident magnam dolor elit adipisicing.</p>
-      </article>
-      <article>
-        <h2>Magnam impedit inventore minima</h2>
-        <img src="https://vis-society.github.io/labs/2/images/empty.svg" alt="">
-        <p>Asperiores eveniet quos voluptate blanditiis dolor consectetur ratione. Laboriosam molestias temporibus numquam officia adipisicing corporis inventore provident impedit tempora. Magnam numquam voluptate consectetur nihil quibusdam impedit.</p>
-      </article>
-    </div>
+    <div class="projects" aria-live="polite" aria-busy="true"><p class="data-message">Loading projects…</p></div>
+    <noscript><p>Enable JavaScript to load the project list.</p></noscript>
   </main>
   <footer class="site-footer"><span>Kevin Kiyose Pyo</span><span>HTML, CSS &amp; JS · DSC 106</span></footer>
 </body>

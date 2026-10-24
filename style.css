@@ -135,7 +135,7 @@ figcaption { color: var(--muted); font-size: .75rem; margin-top: .8rem; }
 /* Step 4.2: as many 15em+ columns as fit, so the grid adapts to the window */
 .projects {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(15em, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(15em, 100%), 1fr));
   gap: 1em;
   padding-bottom: 3rem;
 
@@ -149,7 +149,7 @@ figcaption { color: var(--muted); font-size: .75rem; margin-top: .8rem; }
     border-top: 1px solid var(--line);
   }
 
-  h2 {
+  h2, h3 {
     margin: 0;
     font-size: 1.4rem;
   }
@@ -158,10 +158,30 @@ figcaption { color: var(--muted); font-size: .75rem; margin-top: .8rem; }
     display: block;
     width: 100%;
     height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
   }
 
   p { font-size: .95rem; }
 }
+
+/* ---------- Lab 4: project data and live profile statistics ---------- */
+.latest-projects { border-top: 1px solid var(--line); padding: 2.4rem 0; }
+.latest-projects > h2 { margin-bottom: 1.5rem; }
+.latest-projects .projects { padding-bottom: 0; }
+.all-projects { margin-top: 1.5rem; }
+.project-details .project-year { color: var(--muted); font-size: .8rem; }
+.project-details p + p { margin-top: .6rem; }
+.data-message { grid-column: 1 / -1; color: var(--muted); }
+#profile-stats dl {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: .35rem .75rem;
+  margin: 0 0 1.2rem;
+  text-align: center;
+}
+#profile-stats dt { grid-row: 1; font-size: .75rem; color: var(--muted); }
+#profile-stats dd { grid-row: 2; margin: 0; font-size: 2rem; font-weight: 600; font-variant-numeric: tabular-nums; }
 
 /* ---------- Step 3: contact form ---------- */
 .contact-layout { display: grid; grid-template-columns: 1fr 1.4fr; gap: 4rem; border-top: 1px solid var(--line); padding: 2.5rem 0 3.5rem; }

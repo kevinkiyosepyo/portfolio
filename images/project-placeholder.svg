@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675">
+  <title>Project image placeholder</title>
+  <rect width="1200" height="675" fill="#e5eae5"/>
+  <g fill="none" stroke="#91a398" stroke-width="2">
+    <rect x="400" y="207" width="400" height="260" rx="8"/>
+    <path d="M400 402 505 302 589 383 658 326 800 450"/>
+    <circle cx="695" cy="275" r="24"/>
+  </g>
+</svg>

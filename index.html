@@ -7,6 +7,7 @@
   <title>Kevin Kiyose Pyo: Personal site and portfolio</title>
   <link rel="stylesheet" href="style.css">
   <script type="module" src="global.js"></script>
+  <script type="module" src="index.js"></script>
   <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
 </head>
 <body>
@@ -37,23 +38,22 @@
         <p>Right now that means research data workflows, real time ingestion, and tools that automate repetitive tasks. The part I like most is taking a prototype that works once and making it work every day.</p>
       </div>
     </section>
-    <section class="section-row" aria-labelledby="work-heading">
-      <h2 id="work-heading" class="section-label">02 / Selected work</h2>
-      <div class="project-list">
-        <article>
-          <h3><a href="projects/index.html#lightning">Lightning Data Pipeline <span aria-hidden="true">↗</span></a></h3>
-          <p>Decodes a compressed WebSocket feed into lightning strike data you can query.</p>
-          <p class="meta">Python · PostgreSQL · FastAPI · Docker</p>
-        </article>
-        <article>
-          <h3><a href="projects/index.html#job-agent">Job Application Automation <span aria-hidden="true">↗</span></a></h3>
-          <p>Browser automation that fills out job applications, from creating the account to hitting submit.</p>
-          <p class="meta">Python · Chrome DevTools · AI agents</p>
-        </article>
+    <section class="latest-projects" aria-labelledby="work-heading">
+      <h2 id="work-heading" class="section-label">02 / Latest Projects</h2>
+      <div class="projects" aria-live="polite" aria-busy="true"><p class="data-message">Loading projects…</p></div>
+      <noscript><p>Enable JavaScript to load the project list.</p></noscript>
+      <p class="all-projects"><a href="projects/">See all projects <span aria-hidden="true">→</span></a></p>
+    </section>
+    <section class="section-row" aria-labelledby="github-heading">
+      <h2 id="github-heading" class="section-label">03 / GitHub stats</h2>
+      <div>
+        <div id="profile-stats" aria-live="polite" aria-busy="true"><p class="data-message">Loading GitHub stats…</p></div>
+        <p class="meta">Live from <a href="https://github.com/kevinkiyosepyo">my GitHub profile</a>.</p>
+        <noscript><p>Enable JavaScript to load live GitHub statistics.</p></noscript>
       </div>
     </section>
     <section class="section-row" aria-labelledby="beyond-heading">
-      <h2 id="beyond-heading" class="section-label">03 / Outside work</h2>
+      <h2 id="beyond-heading" class="section-label">04 / Outside work</h2>
       <p>When I'm not coding I hike, snowboard, surf, go to the gym, read classics, and play a few rounds of Valorant.</p>
     </section>
   </main>

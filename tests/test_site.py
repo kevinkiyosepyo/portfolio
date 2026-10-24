@@ -1,5 +1,6 @@
 """Lab acceptance tests. Run: python3 -m unittest discover -s tests -v."""
 from html.parser import HTMLParser
+import json
 from pathlib import Path
 import re
 import unittest
@@ -50,8 +51,15 @@ class LabAcceptanceTests(unittest.TestCase):
                 self.assertTrue(doc.elements("title"))
                 self.assertTrue(any(m.get("name") == "viewport" for m in doc.elements("meta")))
                 scripts = [s for s in doc.elements("script") if s.get("type") == "module"]
-                self.assertEqual(len(scripts), 1, route)
-                self.assertEqual((path.parent / scripts[0]["src"]).resolve(), ROOT / "global.js")
+                script_paths = {(path.parent / script["src"]).resolve() for script in scripts}
+                expected_scripts = {ROOT / "global.js"}
+                if route == "index.html":
+                    expected_scripts.add(ROOT / "index.js")
+                elif route == "projects/index.html":
+                    expected_scripts.add(ROOT / "projects/projects.js")
+                self.assertEqual(script_paths, expected_scripts, route)
+                self.assertEqual(len(scripts), len(expected_scripts), "Do not load a module twice")
+                self.assertTrue(all(script.is_file() for script in script_paths))
                 stylesheet = next(l for l in doc.elements("link") if l.get("rel") == "stylesheet")
                 self.assertEqual((path.parent / stylesheet["href"]).resolve(), ROOT / "style.css")
 
@@ -106,14 +114,13 @@ class Lab2StylingTests(unittest.TestCase):
 
     def test_step4_projects_grid(self):
         doc = Document(ROOT / "projects/index.html")
-        self.assertIn({"class": "projects"}, doc.elements("div"))
-        self.assertEqual(len(doc.elements("article")), 12)
-        self.assertEqual(len(doc.elements("h2")), 12)
-        images = doc.elements("img")
-        self.assertEqual(len(images), 12)
-        self.assertTrue(all("alt" in img for img in images))
+        self.assertTrue(any("projects" in element.get("class", "").split() for element in doc.elements("div")))
+        self.assertFalse(doc.elements("article"), "Lab 4 loads the project cards from JSON")
+        self.assertRegex(
+            self.css,
+            r"grid-template-columns: repeat\(auto-fill, minmax\((?:15em|min\(15em, 100%\)), 1fr\)\);",
+        )
         self.assertCss(
-            "grid-template-columns: repeat(auto-fill, minmax(15em, 1fr));",
             "grid-template-rows: subgrid;", "grid-row: span 3;", "font-size: 400%;",
             "h1, h2, h3, h4, h5, h6 { line-height: 1.1; text-wrap: balance;",
         )
@@ -162,6 +169,34 @@ class Lab3JavaScriptTests(unittest.TestCase):
             "form?.addEventListener('submit'", "event.preventDefault()", "new FormData(form)",
             "for (let [name, value] of data)", "encodeURIComponent(value)", "location.href = url",
         )
+
+
+class Lab4DataTests(unittest.TestCase):
+    """Validate the persistent data contract; browser_check.py tests its behavior."""
+
+    def test_project_data_has_at_least_twelve_complete_records_and_multiple_years(self):
+        projects = json.loads((ROOT / "lib/projects.json").read_text())
+        self.assertIsInstance(projects, list)
+        self.assertGreaterEqual(len(projects), 12)
+        for index, project in enumerate(projects):
+            with self.subTest(project=index):
+                for key in ["title", "image", "description"]:
+                    self.assertIsInstance(project.get(key), str, key)
+                    self.assertTrue(project[key].strip(), key)
+                self.assertRegex(str(project.get("year", "")), r"^\d{4}$")
+                image = project["image"]
+                if not image.startswith(("https://", "http://")):
+                    self.assertTrue((ROOT / image).is_file(), image)
+        self.assertGreater(len({str(project["year"]) for project in projects}), 1)
+        self.assertEqual(len({project["title"] for project in projects}), len(projects))
+
+    def test_page_placeholders_support_dynamic_content(self):
+        projects = Document(ROOT / "projects/index.html")
+        self.assertTrue(any("projects-title" in h.get("class", "").split() for h in projects.elements("h1")))
+        home = Document(ROOT / "index.html")
+        self.assertIn("Latest Projects", home.text)
+        self.assertTrue(any("projects" in element.get("class", "").split() for element in home.elements("div")))
+        self.assertTrue(any(attrs.get("id") == "profile-stats" for _, attrs in home.tags))
 
 
 if __name__ == "__main__":
