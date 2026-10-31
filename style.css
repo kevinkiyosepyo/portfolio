@@ -282,6 +282,8 @@ figcaption { color: var(--muted); font-size: .75rem; margin-top: .8rem; }
   width: 100%;
   margin-top: 1em;
 }
+/* reads out both active filters, e.g. "Showing 1 of 12 projects from 2025" */
+.filter-status { min-height: 1.5em; margin-top: 0.6rem; color: var(--muted); font-size: 0.87rem; }
 @media (prefers-reduced-motion: reduce) {
   #projects-pie-plot path { transition: none; }
 }
