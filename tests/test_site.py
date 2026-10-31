@@ -199,5 +199,74 @@ class Lab4DataTests(unittest.TestCase):
         self.assertTrue(any(attrs.get("id") == "profile-stats" for _, attrs in home.tags))
 
 
+class Lab5ChartTests(unittest.TestCase):
+    """Checks the markup, D3 code, and CSS each Lab 5 step asks for. browser_check.py runs it."""
+
+    html = (ROOT / "projects/index.html").read_text()
+    js = re.sub(r"\s+", " ", (ROOT / "projects/projects.js").read_text())
+    css = Lab2StylingTests.css
+
+    def assertJs(self, *snippets):
+        for snippet in snippets:
+            self.assertIn(snippet, self.js)
+
+    def assertCss(self, *snippets):
+        for snippet in snippets:
+            self.assertIn(snippet, self.css)
+
+    def test_step0_year_style(self):
+        self.assertCss(".project-details .project-year {", "font-variant-numeric: oldstyle-nums;")
+
+    def test_steps_1_2_4_markup_order(self):
+        # Step 2.3 container holds the svg then the legend; Step 4.1 search sits underneath it
+        self.assertRegex(re.sub(r"\s+", " ", self.html), (
+            r'<div class="container"> <svg id="projects-pie-plot" viewBox="-50 -50 100 100"[^>]*></svg> '
+            r'<ul class="legend"></ul> </div> '
+            r'<input class="searchBar" type="search" aria-label="Search projects" placeholder="🔍 Search projects…">'
+        ))
+        self.assertIn('<p class="filter-status" role="status"></p>', self.html)
+
+    def test_steps_1_to_3_d3_pie_and_legend(self):
+        self.assertJs(
+            "import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm';",
+            "d3.arc().innerRadius(0).outerRadius(50)", "d3.scaleOrdinal(d3.schemeTableau10)",
+            "d3.rollups(projectsGiven, (v) => v.length, (d) => d.year)",
+            "({ value: count, label: year })", "d3.pie().value((d) => d.value)",
+            "svg .append('path') .attr('d', arc) .attr('fill', colors(label))",
+            "legend .append('li') .attr('style', `--color:${colors(label)}`)",
+            "item.append('span').attr('class', 'swatch');",
+        )
+
+    def test_step4_search_redraws_list_and_chart(self):
+        self.assertJs(
+            "let query = '';", "Object.values(project).join('\\n').toLowerCase()",
+            "query.trim().toLowerCase()", "searchInput.addEventListener('input'",
+            "svg.selectAll('path').remove();", "legend.selectAll('li').remove();",
+        )
+
+    def test_step5_selection_and_combined_filters(self):
+        self.assertJs(
+            "let selectedYear = null;", "selectedYear = selectedYear === year ? null : year;",
+            ".on('click', () => toggleYear(label))", "function updatePage()",
+            "const searchedProjects = searchProjects();",
+            "searchedProjects.filter((project) => project.year === selectedYear)",
+            "renderPieChart(searchedProjects);",
+        )
+        self.assertNotIn("selectedIndex", self.js, "Step 5.4: an index changes meaning after a search")
+
+    def test_chart_css(self):
+        self.assertCss(
+            ".container { display: flex;", "#projects-pie-plot {", "max-width: 20em;",
+            "margin-block: 2em;", "overflow: visible;",
+            "&:has(path:hover, path:focus-visible) { path:not(:hover, :focus-visible) { opacity: 0.5; } }",
+            "path { transition: 300ms; cursor: pointer; }",
+            "path:focus { outline: none; }",
+            ".legend { flex: 1 1 14em; display: grid; grid-template-columns: repeat(auto-fill, minmax(9em, 1fr)); gap: 1em;",
+            ".legend-item { display: flex; align-items: center; gap: 0.5em;",
+            ".swatch { display: inline-block; width: 1em; aspect-ratio: 1 / 1; border-radius: 50%; background: var(--color); }",
+            ".selected { --color: oklch(60% 45% 0) !important; &:is(path) { fill: var(--color); } }",
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

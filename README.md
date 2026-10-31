@@ -1,13 +1,13 @@
 # Kevin Kiyose Pyo's portfolio
 
-My personal site for DSC 106 [Lab 1](https://dsc106.com/labs/lab01/), [Lab 2](https://dsc106.com/labs/lab02/), [Lab 3](https://dsc106.com/labs/lab03/), and [Lab 4](https://dsc106.com/labs/lab04/). It's plain HTML, one stylesheet, and JavaScript modules: no framework, build step, web fonts, or tracking.
+My personal site for DSC 106 [Lab 1](https://dsc106.com/labs/lab01/), [Lab 2](https://dsc106.com/labs/lab02/), [Lab 3](https://dsc106.com/labs/lab03/), [Lab 4](https://dsc106.com/labs/lab04/), and [Lab 5](https://dsc106.com/labs/lab05/). It's plain HTML, one stylesheet, and JavaScript modules: no framework, build step, web fonts, or tracking.
 
 Live site: https://kevinkiyosepyo.github.io/portfolio/
 
 ## Pages
 
 - `index.html` is the home page, with a short intro, my photo, the first three projects from the shared data file, and live GitHub statistics.
-- `projects/index.html` loads all 12 project cards from `lib/projects.json` and calculates the count in the heading.
+- `projects/index.html` loads all 12 project cards from `lib/projects.json`, calculates the count in the heading, and shows a pie chart of projects per year with a search box.
 - `contact/index.html` has a `mailto:` form with `method="GET"`.
 - `resume/index.html` covers education, experience, projects, and skills, with `<time>` elements for every date.
 - `style.css` holds the styles for every page.
@@ -44,6 +44,23 @@ Every page loads `global.js` with `type="module"`.
 - `index.js` renders `projects.slice(0, 3)` using `h3` headings under Latest Projects. It independently fetches repositories, gists, followers, and following into a definition list in `#profile-stats`.
 - Both pages show loading and error messages. Relative image paths resolve against the site root, so they work on the homepage, nested Projects page, and GitHub Pages.
 
+## Lab 5 changes
+
+After Step 0, only `projects/index.html`, `projects/projects.js`, and `style.css` change, as the lab asks.
+
+0. Each project card already showed its year under the description (Lab 4). The year now uses Baskerville with old style numerals.
+1. The Projects page has an `<svg id="projects-pie-plot">` with `viewBox="-50 -50 100 100"`. D3, imported from jsDelivr, draws one `<path>` per year with `d3.arc()` and `d3.pie()`, colored by `d3.scaleOrdinal(d3.schemeTableau10)`. Colors are keyed by year, so a year keeps its color when a filter changes the slices.
+2. A legend built with D3 sits beside the pie in a flex container and wraps below it on phones. Each item passes its color to a round swatch through `--color`. The legend is a `repeat(auto-fill, minmax(9em, 1fr))` grid, and the gap inside an item is smaller than the gap between items.
+3. `d3.rollups()` counts projects per year from `lib/projects.json`.
+4. The search box filters projects across every field, ignoring case, as you type. The pie and legend redraw to count only the matching projects.
+5. Hovering a wedge fades the others. Clicking a wedge or a legend item selects that year in a highlight color no year uses and shows only its projects. Clicking again clears it. Wedges also work from the keyboard: Tab reaches them, Enter or Space toggles, and focus stays on the wedge after the redraw.
+
+### Step 5.4: search and the pie together
+
+In the lab's version (commit `7eea598`), the search handler filtered the full project list by the query only, and the click handler filtered the full list by the year only. Each ignored the other's filter, so searching and then clicking a slice dropped the search, and typing after clicking dropped the year. The selection was also saved as a slice index, which points at a different year once the search redraws the pie with fewer slices.
+
+The fix (commit `2825aca`) saves the selection as a year and sends both controls through `updatePage()`. It applies the search and then the year to the full list every time, draws the pie from the searched projects so every matching year stays clickable, and writes both active filters to a status line. A selected year that the search leaves with no matches stays in the legend at 0 so it can be cleared.
+
 ## Run locally
 
 From the repository root:
@@ -68,7 +85,7 @@ The browser checks need Playwright and Google Chrome:
 python3 tests/browser_check.py --url http://127.0.0.1:8000/ --live-api
 ```
 
-They load every page at four widths and check for horizontal overflow and broken images. Then they click through the nav and check which link is marked current, switch themes and reload to make sure the choice is saved, and load the site from the GitHub Pages URL to check the `/portfolio/` links. The Lab 4 checks also verify shared project data, dynamic counts, API statistics, repeated rendering, and failure states. Repeated checks use a fixed API response; `--live-api` checks the real endpoint once. Screenshots and the report go in `artifacts/`, which git ignores.
+They load every page at four widths and check for horizontal overflow and broken images. Then they click through the nav and check which link is marked current, switch themes and reload to make sure the choice is saved, and load the site from the GitHub Pages URL to check the `/portfolio/` links. The Lab 4 checks also verify shared project data, dynamic counts, API statistics, repeated rendering, and failure states. The Lab 5 checks compare the pie and legend with the data, then hover, select, search, combine both filters in both orders, and toggle wedges from the keyboard. Repeated checks use a fixed API response; `--live-api` checks the real endpoint once. Screenshots and the report go in `artifacts/`, which git ignores.
 
 The contact form needs a mail app or browser mail handler and doesn't send anything itself. The browser check points the form at a local URL so it can read the encoded query string instead of opening a mail app.
 
@@ -79,6 +96,8 @@ The résumé page is a shorter HTML version of my résumé, not the original fil
 ## Submission
 
 Submit the repository URL, the live site URL, and a narrated MP4 of no more than one minute to Gradescope. For Lab 4, record the laptop screen, present the site, demonstrate the new JavaScript features, explain your actual most interesting learning, and answer one Think About It question. Written captions alone do not meet the spoken-explanation requirement.
+
+For Lab 5, present the chart, interact with it, explain why the search and a slice click did not combine and which lines change to fix it, show the fixed interaction for the extra credit, and say the most interesting thing you learned.
 
 A useful question to explain: why clear the container before rendering? Without clearing it, rendering again appends duplicate project cards. Replacing its content makes every render match the current data.
 

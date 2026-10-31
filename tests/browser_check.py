@@ -143,6 +143,165 @@ def check_failures(browser, base, projects, report):
         context.close()
 
 
+def search(projects, query):
+    """Mirror projects.js: a case-insensitive match against every field."""
+    needle = query.strip().lower()
+    return [p for p in projects if needle in "\n".join(str(v) for v in p.values()).lower()]
+
+
+def in_year(projects, year):
+    return [p for p in projects if p["year"] == year]
+
+
+def check_pie_chart(browser, base, projects, output, report):
+    """Lab 5: the pie and legend match the data, and hover, select, and search work alone and together."""
+    years = sorted({p["year"] for p in projects})
+    context = browser.new_context(viewport={"width": 1280, "height": 900}, reduced_motion="reduce")
+    page = context.new_page()
+    errors = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    page.on("console", lambda message: errors.append(message.text) if message.type == "error" else None)
+    page.goto(urljoin(base, "projects/"), wait_until="networkidle")
+
+    wedges = page.locator("#projects-pie-plot path")
+    legend = page.locator(".legend li")
+    cards = page.locator(".projects > article")
+    status = page.locator(".filter-status")
+    search_box = page.get_by_role("searchbox", name="Search projects")
+    wedge = lambda year: page.locator(f'#projects-pie-plot path[data-year="{year}"]')
+    legend_item = lambda year: legend.filter(has_text=str(year))
+
+    def expect_state(visible, searched, selected=None):
+        expect(cards).to_have_count(len(visible))
+        assert cards.locator("h2").all_inner_texts() == [p["title"] for p in visible]
+        shown = sorted({p["year"] for p in searched} | ({selected} if selected is not None else set()))
+        labels = [re.sub(r"\s+", " ", text).strip() for text in legend.all_inner_texts()]
+        assert labels == [f"{y} ({len(in_year(searched, y))})" for y in shown], labels
+        expect(wedges).to_have_count(len({p["year"] for p in searched}))
+        has_wedge = selected is not None and in_year(searched, selected)
+        expect(page.locator("#projects-pie-plot path.selected")).to_have_count(1 if has_wedge else 0)
+        expect(page.locator(".legend li.selected")).to_have_count(0 if selected is None else 1)
+        if selected is not None:
+            expect(page.locator(".legend li.selected")).to_contain_text(str(selected))
+        if not visible:
+            expect(page.locator(".projects")).to_contain_text("No projects match")
+
+    # Steps 1 to 3: one wedge and one legend entry per year, sharing a color
+    expect_state(projects, projects)
+    expect(status).to_have_text(f"Showing all {len(projects)} projects. Select a slice to filter by year.")
+    fills = []
+    for year in years:
+        count = len(in_year(projects, year))
+        expect(wedge(year)).to_have_attribute("aria-label", f"{year}: {count} {'project' if count == 1 else 'projects'}")
+        fill = wedge(year).get_attribute("fill")
+        assert legend_item(year).get_attribute("style") == f"--color:{fill}", year
+        fills.append(fill)
+    assert len(set(fills)) == len(fills), fills
+
+    # Step 5.1: hovering one wedge fades the others
+    if len(years) > 1:
+        wedge(years[0]).hover()
+        assert wedge(years[0]).evaluate("el => getComputedStyle(el).opacity") == "1"
+        assert wedge(years[1]).evaluate("el => getComputedStyle(el).opacity") == "0.5"
+        page.mouse.move(0, 0)
+        assert wedge(years[1]).evaluate("el => getComputedStyle(el).opacity") == "1"
+
+    # Steps 5.2 and 5.3: a click selects a year, a second click clears it
+    year = min(years, key=lambda y: len(in_year(projects, y)))
+    wedge(year).click()
+    expect_state(in_year(projects, year), projects, year)
+    expect(wedge(year)).to_have_attribute("aria-pressed", "true")
+    expect(status).to_have_text(f"Showing {len(in_year(projects, year))} of {len(projects)} projects from {year}.")
+    highlight = page.evaluate("""() => {
+        const probe = document.createElement('div');
+        probe.style.color = 'oklch(60% 45% 0)';
+        document.body.append(probe);
+        const color = getComputedStyle(probe).color;
+        probe.remove();
+        return color;
+    }""")
+    assert wedge(year).evaluate("el => getComputedStyle(el).fill") == highlight
+    assert page.locator(".legend li.selected .swatch").evaluate("el => getComputedStyle(el).backgroundColor") == highlight
+    assert page.evaluate("getComputedStyle(document.activeElement).outlineStyle") == "none", "no focus box after a click"
+    wedge(year).click()
+    expect_state(projects, projects)
+    legend_item(year).click()
+    expect_state(in_year(projects, year), projects, year)
+    legend_item(year).click()
+    expect_state(projects, projects)
+    report["pie_legend_hover_and_select"] = "passed"
+
+    # Step 5.4: a search whose results cover part of some year, so both filters visibly matter
+    query, year = next(
+        (q, y) for q in ["pipeline", "data", "dsc", "a"] for y in years
+        if 0 < len(in_year(search(projects, q), y)) < len(in_year(projects, y))
+    )
+    searched = search(projects, query)
+    search_box.fill(query)
+    expect_state(searched, searched)
+    wedge(year).click()
+    expect_state(in_year(searched, year), searched, year)
+    expect(status).to_have_text(
+        f"Showing {len(in_year(searched, year))} of {len(projects)} projects from {year} matching “{query}”.")
+    wedge(year).click()
+    expect_state(searched, searched)
+    search_box.fill("")
+    wedge(year).click()
+    expect_state(in_year(projects, year), projects, year)
+    search_box.fill(query)
+    expect_state(in_year(searched, year), searched, year)
+    report["search_then_slice_and_slice_then_search"] = {"query": query, "year": year, "passed": True}
+
+    # A selected year the search empties stays in the legend at 0 so it can be cleared
+    search_box.fill("")
+    wedge(year).click()  # clear
+    pair = next(
+        ((p["title"], y) for y in years for p in projects
+         if p["year"] != y and not in_year(search(projects, p["title"]), y)), None)
+    if pair:
+        query, year = pair
+        searched = search(projects, query)
+        wedge(year).click()
+        search_box.fill(query)
+        expect_state([], searched, year)
+        expect(wedge(year)).to_have_count(0)
+        legend_item(year).click()
+        expect_state(searched, searched)
+        search_box.fill("")
+        report["selected_year_with_no_matches"] = "passed"
+
+    # Keyboard: Tab reaches the wedges, Enter and Space toggle, focus stays on the wedge
+    search_box.focus()
+    for _ in range(len(years)):
+        page.keyboard.press("Shift+Tab")
+    focused = page.evaluate("document.activeElement.dataset.year")
+    assert focused is not None, "Shift+Tab from the search box should reach a wedge"
+    year = int(focused)
+    page.keyboard.press("Enter")
+    expect_state(in_year(projects, year), projects, year)
+    assert page.evaluate("document.activeElement.dataset.year") == focused
+    assert page.evaluate("document.activeElement.matches(':focus-visible')")
+    assert page.evaluate("getComputedStyle(document.activeElement).stroke") != "none"
+    page.keyboard.press(" ")
+    expect_state(projects, projects)
+    assert page.evaluate("document.activeElement.dataset.year") == focused
+    report["keyboard_toggle_keeps_focus"] = "passed"
+
+    # Screenshots for review: combined filters in light, dark, and phone widths
+    query, year = report["search_then_slice_and_slice_then_search"]["query"], report["search_then_slice_and_slice_then_search"]["year"]
+    search_box.fill(query)
+    wedge(year).click()
+    page.mouse.move(0, 0)
+    page.locator("main").screenshot(path=str(output / "projects-lab5-filtered-1280.png"))
+    page.emulate_media(color_scheme="dark")
+    page.locator("main").screenshot(path=str(output / "projects-lab5-filtered-dark-1280.png"))
+    page.emulate_media(color_scheme="light")
+    page.set_viewport_size({"width": 390, "height": 900})
+    page.locator("main").screenshot(path=str(output / "projects-lab5-filtered-390.png"))
+    assert not errors, errors
+    context.close()
+
+
 def check_live_api(browser, base, report):
     """Optional single real API request, separate from deterministic regressions."""
     context = browser.new_context()
@@ -318,6 +477,7 @@ def main():
         assert not report["errors"], report["errors"]
         check_dynamic_data(browser, base, projects, report)
         check_failures(browser, base, projects, report)
+        check_pie_chart(browser, base, projects, output, report)
         if args.live_api:
             check_live_api(browser, base, report)
         context.close()
