@@ -220,8 +220,14 @@ figcaption { color: var(--muted); font-size: .75rem; margin-top: .8rem; }
     cursor: pointer;
   }
 
-  /* the fade above marks keyboard focus, so the default box outline is not needed */
-  path:focus-visible { outline: none; }
+  /* Chrome draws a box around any focused SVG shape, even after a mouse click.
+     Keyboard focus gets the fade above plus a thin stroke on the wedge instead. */
+  path:focus { outline: none; }
+  path:focus-visible {
+    stroke: var(--ink);
+    stroke-width: 0.75;
+    stroke-linejoin: round;
+  }
 }
 
 /* Step 2.2: a bordered legend whose items fill as many columns as fit */
@@ -276,7 +282,6 @@ figcaption { color: var(--muted); font-size: .75rem; margin-top: .8rem; }
   width: 100%;
   margin-top: 1em;
 }
-
 @media (prefers-reduced-motion: reduce) {
   #projects-pie-plot path { transition: none; }
 }
