@@ -170,7 +170,13 @@ figcaption { color: var(--muted); font-size: .75rem; margin-top: .8rem; }
 .latest-projects > h2 { margin-bottom: 1.5rem; }
 .latest-projects .projects { padding-bottom: 0; }
 .all-projects { margin-top: 1.5rem; }
-.project-details .project-year { color: var(--muted); font-size: .8rem; }
+/* Lab 5 Step 0.1: the year sits under the description in a quieter serif */
+.project-details .project-year {
+  color: var(--muted);
+  font-family: Baskerville, "Baskerville Old Face", Georgia, serif;
+  font-size: .9rem;
+  font-variant-numeric: oldstyle-nums;
+}
 .project-details p + p { margin-top: .6rem; }
 .data-message { grid-column: 1 / -1; color: var(--muted); }
 #profile-stats dl {
@@ -182,6 +188,98 @@ figcaption { color: var(--muted); font-size: .75rem; margin-top: .8rem; }
 }
 #profile-stats dt { grid-row: 1; font-size: .75rem; color: var(--muted); }
 #profile-stats dd { grid-row: 2; margin: 0; font-size: 2rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* ---------- Lab 5: projects per year pie chart ---------- */
+.projects-overview { padding-bottom: 1.5rem; }
+
+/* Step 2.3: pie and legend side by side. The legend wraps below the pie on narrow screens. */
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 2.5em;
+}
+
+/* Step 1.1: keep the pie a sensible size */
+#projects-pie-plot {
+  flex: 0 1 14em;
+  min-width: 0; /* an SVG flex item otherwise refuses to shrink below about 300px */
+  max-width: 20em;
+  margin-block: 2em;
+  overflow: visible;
+
+  /* Step 5.1: fade every wedge except the one under the pointer or keyboard focus */
+  &:has(path:hover, path:focus-visible) {
+    path:not(:hover, :focus-visible) {
+      opacity: 0.5;
+    }
+  }
+
+  path {
+    transition: 300ms;
+    cursor: pointer;
+  }
+
+  /* the fade above marks keyboard focus, so the default box outline is not needed */
+  path:focus-visible { outline: none; }
+}
+
+/* Step 2.2: a bordered legend whose items fill as many columns as fit */
+.legend {
+  flex: 1 1 14em;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9em, 1fr));
+  gap: 1em;
+  margin: 0;
+  padding: 1em;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  list-style: none;
+}
+
+/* the gap inside an item stays smaller than the gap between items (proximity) */
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin: 0;
+  cursor: pointer;
+
+  em {
+    color: var(--muted);
+    font-style: normal;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.swatch {
+  display: inline-block;
+  width: 1em;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: var(--color);
+}
+
+/* Step 5.2: the selected wedge and its legend item switch to a color no year uses */
+.selected {
+  --color: oklch(60% 45% 0) !important;
+
+  &:is(path) {
+    fill: var(--color);
+  }
+}
+.legend-item.selected { font-weight: 600; }
+
+/* Step 4.1: full-width search under the chart */
+.searchBar {
+  display: block;
+  width: 100%;
+  margin-top: 1em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #projects-pie-plot path { transition: none; }
+}
 
 /* ---------- Step 3: contact form ---------- */
 .contact-layout { display: grid; grid-template-columns: 1fr 1.4fr; gap: 4rem; border-top: 1px solid var(--line); padding: 2.5rem 0 3.5rem; }

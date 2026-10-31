@@ -21,7 +21,15 @@
       <h1 class="projects-title">Projects</h1>
       <p class="lead">Real time data pipelines, backend systems, and tools that handle repetitive work.</p>
     </header>
-    <div class="projects" aria-live="polite" aria-busy="true"><p class="data-message">Loading projects…</p></div>
+    <section class="projects-overview" aria-labelledby="projects-per-year">
+      <h2 id="projects-per-year" class="section-label">Projects per year</h2>
+      <div class="container">
+        <svg id="projects-pie-plot" viewBox="-50 -50 100 100" role="group" aria-label="Projects per year. Select a slice to show only that year’s projects."></svg>
+        <ul class="legend"></ul>
+      </div>
+      <input class="searchBar" type="search" aria-label="Search projects" placeholder="🔍 Search projects…">
+    </section>
+    <div class="projects" aria-busy="true"><p class="data-message">Loading projects…</p></div>
     <noscript><p>Enable JavaScript to load the project list.</p></noscript>
   </main>
   <footer class="site-footer"><span>Kevin Kiyose Pyo</span><span>HTML, CSS &amp; JS · DSC 106</span></footer>
